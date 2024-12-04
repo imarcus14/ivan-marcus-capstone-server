@@ -4,7 +4,7 @@ export default {
     host: "127.0.0.1",
     user: "root",
     password: "chillybundog",
-    databse:"",
+    database:"woofmeet",
     charset: "utf8"
   }
 };
