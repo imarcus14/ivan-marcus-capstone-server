@@ -26,7 +26,7 @@ export function up(knex) {
         table.string('age').notNullable();
         table.string('breed').notNullable();
         table.string('personality').notNullable();
-        table.string('picture').notNullable();
+        table.string('photo').notNullable();
         table.timestamp('created_at').defaultTo(knex.fn.now());
         table.timestamp('updated_at').defaultTo(knex.raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
       });
@@ -40,6 +40,6 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-    return knex.schema.dropTable('users').dropTable('dogs');
+    return knex.schema.dropTable('dogs').dropTable('users');
   
 };
