@@ -15,12 +15,7 @@ export function up(knex) {
       })
       .createTable('dogs', (table) => {
         table.increments('id').primary();
-        table
-            // .foreign('users_id')
-            .integer('user_id').unsigned().notNullable()
-            // .references('users.id')
-            // .onUpdate('CASCADE')
-            // .onDelete('CASCADE');
+        table.integer('user_id').unsigned().notNullable()
         table.foreign('user_id').references("id").inTable("users").onUpdate('CASCADE').onDelete('CASCADE');
         table.string('name').notNullable();
         table.string('age').notNullable();
