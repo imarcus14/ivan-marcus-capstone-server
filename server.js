@@ -26,24 +26,36 @@ const io = new Server(server, {
     },
 });
 
-io.on('connection', (socket) => {
-    // console.log('A user connected:', socket.id);
+const chatHistory = {};
 
-    socket.on('chat message', (msg) => {
-        // console.log('Message Recieved', msg);
-        io.emit('chat message', msg);
+io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id);
+
+    socket.on("join room", ({room}) => {
+        socket.join(room)
+        console.log(`user joined room ${room}`)
+
+        socket.emit("chat history", chatHistory[room] || [])
+    })
+
+    socket.on('chat message', ({room, msg, sender}) => {
+        console.log(`Message recieved in room ${room}: ${msg}`);
+        // io.emit('chat message', msg);
+
+        if (!chatHistory[room]){
+            chatHistory[room]=[];
+        }
+        chatHistory[room].push({ sender, msg });
+
+        io.to(room).emit("chat message", { sender, msg });
     });
 
     socket.on('disconnect', () => {
-        // console.log('User has disocnnected', socket.id);
+        console.log('User has disocnnected', socket.id);
     });
 });
 
 
-
-// const app = express();
-// app.use(cors());
-// app.use(express.json());
 
 
 

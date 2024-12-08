@@ -68,66 +68,69 @@ router
         }
     })
 
-    router  
-        .route("/latest")
-        .get(async (req, res) => {
-            try{
-                const latestDog = await knex('dogs')
-                    .select('dogs.*', 'users.*', 'dogs.name as dogName')
-                    .join('users', 'dogs.user_id', 'users.id')
-                    .orderBy("dogs.created_at", "desc")
-                    .first();
+router  
+    .route("/latest")
+    .get(async (req, res) => {
+        try{
+            const latestDog = await knex('dogs')
+                .select('dogs.*', 'users.*', 'dogs.name as dogName')
+                .join('users', 'dogs.user_id', 'users.id')
+                .orderBy("dogs.created_at", "desc")
+                .first();
 
-                if(!latestDog){
-                    return res.status(404).json("No new dog found");
-                }
-                  
-                res.status(200).json(latestDog)
-        
-            }catch(error){
-                console.error(error);
-                res.status(400).json({ error });
+            if(!latestDog){
+                return res.status(404).json("No new dog found");
             }
-        })
+                  
+            res.status(200).json(latestDog)
+        
+        }catch(error){
+            console.error(error);
+            res.status(400).json({ error });
+        }
+    });
 
+router
+    .route("/:username")
+    .get( async (req,res) => {
+        const {username} = req.params;
 
+        try{
+            const user = await knex("users").where("username", username).first();
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+            const dog = await knex("dogs").where("user_id", user.id).first();
 
-    // router
-//     .route("/:userId")
-//     .get(async (req, res) => {
-//         try{
-//             const dogsWithUserData = await knex('dogs')
-//                 .select('dogs.*', 'users.*', 'dogs.name as dogName')
-//                 .join('users', 'dogs.user_id', 'users.id')
-//                 .where({'dogs.user_id': req.params.userId})
-              
-//             res.status(200).json(dogsWithUserData)
-    
-//         }catch(error){
-//             console.error(error);
-//             res.status(400).json({ error });
-//         }
-//     });
-
-
-
-
-
-
+            res.json({
+                username: user.username,
+                name: user.name,
+                city: user.city,
+                dogName: dog?.name || "",
+                dogAge: dog?.age || "",
+                dogBreed: dog?.breed || "",
+                dogPersonality: dog?.personality || "",
+                photo: dog?.photo || "",
+            });
+            
+        }catch(error){
+            console.error(error);
+        }
+    });
 
 // router
-//     .route("/")
-//     .get(async (req, res) => {
-//         try {
-//             const data = await knex("dogs")
-//             .select('dogs.*', 'users.*', 'dogs.name as dogName')
-//             .join('users', 'dogs')
-              
-//             res.status(200).json(data);
-//         } catch (error) {
-//             console.error(error);
-//             res.status(400).send(`Error retrieving users`);
-//         }
+//     .route("/login")
+//     .post(async (req, res) => {
+//         const {
+//             username,
+//             password
+//         } = req.body;
+
+//         if (!username || !user.password !== password) {
+//             return res.status(400).json({ message: "Username or pssword is incorrect" });
+//            }
+            
 //     })
+
 
 export default router;
