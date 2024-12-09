@@ -1,9 +1,22 @@
 import configuration from '../knexfile.js';
 import express from 'express';
+import fs from 'fs';
 import initKnex from 'knex';
+import multer from 'multer';
+import path from 'path'
 
 const knex = initKnex(configuration);
 const router = express.Router();
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadPath = path.join(process.cwd(), "uploads");
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    },
+})
+const upload = multer({storage})
 
 
 router
@@ -21,10 +34,12 @@ router
             res.status(400).json({ error });
         }
     })
-    .post(async (req, res) => {
-        console.log("Request body for /dogs:", req.body);
-        const { name, age, breed, personality, user_id, photo } = req.body;
+    .post(upload.single('photo'), async (req, res) => {
+        const { name, age, breed, personality, user_id } = req.body;
 
+        if(!req.file){
+            return res.status(400).json({ message: "Dog photo is required" });
+        }
        
         if (!name) {
             return res.status(400).json({ message: "Dog name is required" });
@@ -52,14 +67,14 @@ router
                 breed,
                 personality,
                 user_id,
-                photo    
+                photo: req.file ? `uploads/${req.file.filename}` : null,  
             });
 
             const newDog = await knex("dogs")
                 .where('id', newDogId)
                 .first();
 
-            // const { created_at, updated_at, ...dogNew } = newDog
+      
 
             res.status(201).json(newDog);
         } catch (error) {
@@ -67,6 +82,7 @@ router
             res.status(500).json({ message: "Error creating dog", error: error.message});
         }
     })
+   
 
 router  
     .route("/latest")
@@ -118,19 +134,7 @@ router
         }
     });
 
-// router
-//     .route("/login")
-//     .post(async (req, res) => {
-//         const {
-//             username,
-//             password
-//         } = req.body;
 
-//         if (!username || !user.password !== password) {
-//             return res.status(400).json({ message: "Username or pssword is incorrect" });
-//            }
-            
-//     })
 
 
 export default router;

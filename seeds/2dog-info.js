@@ -3,10 +3,10 @@
  * @returns { Promise<void> } 
  */
 export async function seed(knex) {
-  // Deletes ALL existing entries
+ 
   await knex('dogs').del()
   await knex('dogs').insert([
-    { id: 1, user_id: 1, name: 'Buddy', age: '2 years', breed: 'Labrador Retriever', personality: 'Calm/Agreeable', photo: 'https://example.com/photos/dog_1.jpg' },
+    { id: 1, user_id: 1, name: 'Buddy', age: '2 years', breed: 'Labrador Retriever', personality: 'Calm/Agreeable', photo: 'http://localhost:8080/uploads/1733682751225.jpeg' },
     { id: 2, user_id: 2, name: 'Max', age: '3 years', breed: 'German Shepherd', personality: 'Anxious/Fearful', photo: 'https://example.com/photos/dog_2.jpg' },
     { id: 3, user_id: 3, name: 'Bella', age: '1 year', breed: 'Poodle', personality: 'Excitable/Hyperattached', photo: 'https://example.com/photos/dog_3.jpg' },
     { id: 4, user_id: 4, name: 'Charlie', age: '18 months', breed: 'Bulldog', personality: 'Aloof/Predatory', photo: 'https://example.com/photos/dog_4.jpg' },

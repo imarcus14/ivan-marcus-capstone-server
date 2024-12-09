@@ -3,6 +3,8 @@ import cors from 'cors';
 import dogsRoutes from './routes/dog-routes.js';
 import dotenv from'dotenv';
 import express from 'express';
+import multer from 'multer';
+import path from 'path';
 import usersRoutes from './routes/user-routes.js';
 dotenv.config();
 
@@ -12,6 +14,7 @@ const PORT = process.env.PORT || 8081;
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/dogs", dogsRoutes);
 app.use("/users", usersRoutes);
@@ -40,7 +43,7 @@ io.on('connection', (socket) => {
 
     socket.on('chat message', ({room, msg, sender}) => {
         console.log(`Message recieved in room ${room}: ${msg}`);
-        // io.emit('chat message', msg);
+      
 
         if (!chatHistory[room]){
             chatHistory[room]=[];

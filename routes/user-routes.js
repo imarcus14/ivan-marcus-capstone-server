@@ -8,7 +8,6 @@ const router = express.Router();
 router
     .route("/")
     .post(async (req, res) => {
-        console.log("Request body for /users:", req.body);
         const {
             name,
             username,
@@ -43,11 +42,7 @@ router
                 city,   
             });
 
-            // const newUser = await knex("users")
-            //     .where('id', newUserId)
-            //     .first();
-
-            // const { created_at, updated_at, ...userNew } = newUser
+           
 
             res.status(201).json({ id: newUserId });
         } catch (error) {
