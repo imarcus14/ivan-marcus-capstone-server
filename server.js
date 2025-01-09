@@ -38,19 +38,23 @@ io.on('connection', (socket) => {
         socket.join(room)
         console.log(`user joined room ${room}`)
 
-        socket.emit("chat history", chatHistory[room] || [])
-    })
+        if (chatHistory[room]) {
+            socket.emit("chat history", chatHistory[room]);
+        } else {
+            socket.emit("chat history", []);
+        }
+    });
 
-    socket.on('chat message', ({room, msg, sender}) => {
-        console.log(`Message recieved in room ${room}: ${msg}`);
+    socket.on('chat message', ({room, msg}) => {
+        console.log(`Message received in room ${room}: ${msg} `);
       
 
         if (!chatHistory[room]){
             chatHistory[room]=[];
         }
-        chatHistory[room].push({ sender, msg });
+        chatHistory[room].push({  msg });
 
-        io.to(room).emit("chat message", { sender, msg });
+        io.to(room).emit("chat message", {  msg });
     });
 
     socket.on('disconnect', () => {

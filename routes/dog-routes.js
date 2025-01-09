@@ -122,17 +122,56 @@ router
                 username: user.username,
                 name: user.name,
                 city: user.city,
+                password: user.password,
                 dogName: dog?.name || "",
                 dogAge: dog?.age || "",
                 dogBreed: dog?.breed || "",
                 dogPersonality: dog?.personality || "",
                 photo: dog?.photo || "",
+                dogId: dog?.id || null,
             });
             
         }catch(error){
             console.error(error);
         }
-    });
+    })
+    .put( async (req,res) => {
+        const {username} = req.params;
+        const { name, city, password, dogName, dogAge, dogBreed, dogPersonality, dogPhoto } = req.body;
+
+        try{
+            const user = await knex("users").where("username", username).first();
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            await knex("users")
+                .where("id", user.id)
+                .update({
+                    name: name || user.name,
+                    city: city || user.city,
+                    password: password ||user.password,
+                });
+
+            const dog = await knex("dogs").where("user_id", user.id).first();
+            await knex("dogs")
+                .where("id", dog.id)
+                .update({
+                    name: dogName || dog.name,
+                    age: dogAge || dog.age,
+                    breed: dogBreed || dog.breed,
+                    personality: dogPersonality || dog.personality,
+                    photo: dogPhoto || dog.photo
+                });
+
+            res.json({ message: "User and dog information updated successfully" });
+        }catch(error){
+            console.error(error);
+            res.status(500).json({ message: "Internal server error" });
+        }
+        
+
+    })
 
 
 
